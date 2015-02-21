@@ -25,6 +25,8 @@
       <div id="loggedin">
         <div id="user-profile">
         </div>
+        <div id="playlists">
+        </div>
         <div id="oauth">
         </div>
         <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
@@ -49,6 +51,17 @@
           </dl>
         </div>
       </div>
+    </script>
+
+    <script id="playlists-template" type="text/x-handlebars-template">
+      <h2>Playlists</h2>
+      <dl class="dl-horizontal">
+        {{#each items}}
+        <dt>Name</dt><dd>{{name}}</dd>
+        <dt>#Tracks</dt><dd>{{tracks.total}}</dd>
+        <dt></dt><dd><iframe src="https://embed.spotify.com/?uri={{uri}}&view=coverart" frameborder="0" allowtransparency="true"></iframe></dd>
+        {{/each}}
+      </dl>
     </script>
 
     <script id="oauth-template" type="text/x-handlebars-template">
@@ -81,6 +94,10 @@
         var userProfileSource = document.getElementById('user-profile-template').innerHTML,
             userProfileTemplate = Handlebars.compile(userProfileSource),
             userProfilePlaceholder = document.getElementById('user-profile');
+        
+        var playlistsSource = document.getElementById('playlists-template').innerHTML,
+            playlistsTemplate = Handlebars.compile(playlistsSource),
+            playlistsPlaceholder = document.getElementById('playlists')
 
         var oauthSource = document.getElementById('oauth-template').innerHTML,
             oauthTemplate = Handlebars.compile(oauthSource),
@@ -91,6 +108,8 @@
         var access_token = params.access_token,
             refresh_token = params.refresh_token,
             error = params.error;
+
+        var uid;
 
         if (error) {
           alert('There was an error during the authentication');
@@ -109,11 +128,27 @@
                 },
                 success: function(response) {
                   userProfilePlaceholder.innerHTML = userProfileTemplate(response);
-
-                  $('#login').hide();
-                  $('#loggedin').show();
                 }
-            });
+            })            
+            .done(function(response){
+                  playlist_url = 'https://api.spotify.com/v1/users/' + response.id + '/playlists';
+                  console.log('ID: ' + response.id + ' ' + playlist_url);
+                  $.ajax({
+                    url: playlist_url,
+                    headers: {
+                    'Authorization': 'Bearer ' + access_token
+                    },
+                    success: function(data) {
+                      console.log(data);
+                      playlistsPlaceholder.innerHTML = playlistsTemplate(data);
+
+                      $('#login').hide();
+                      $('#loggedin').show();
+                    }
+                  })
+                }
+              );
+            
           } else {
               // render initial screen
               $('#login').show();
