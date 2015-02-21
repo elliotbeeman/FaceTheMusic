@@ -1,7 +1,7 @@
 {
-  "author": "Doozer",
-  "name": "web-api-code-example",
-  "description": "Basic examples of the Spotify authorization flows through oAuth2",
+  "author": "elliotbeeman",
+  "name": "facethemusic",
+  "description": "forked from examples",
   "version": "0.0.1",
   "main": "app.js",
   "dependencies": {
