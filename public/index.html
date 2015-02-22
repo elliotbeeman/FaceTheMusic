@@ -13,6 +13,19 @@
         white-space: nowrap;
         width: 500px;
       }
+      #search-form, .form-control {
+        margin-bottom: 20px;
+      }
+      .cover {
+        width: 200px;
+        height: 200px;
+        display: inline-block;
+        background-size: cover;
+      }
+      .cover:hover {
+        cursor: pointer;
+        border: 5px solid #e45343;
+      }
     </style>
   </head>
 
@@ -28,6 +41,7 @@
         <div id="playlists">
         </div>
         <div>
+          <h2>Search</h2>
           <form id="search-form">
           <input type="text" id="query" value="" class="form-control" placeholder="Type a Song Name"/>
           <input type="submit" id="search" class="btn btn-primary" value="Search" />
@@ -59,25 +73,27 @@
     </script>
 
     <script id="playlists-template" type="text/x-handlebars-template">
-      <h2>Playlists</h2>
       <dl class="dl-horizontal">
-        {{#each items}}
-        <dt>Name</dt><dd>{{name}}</dd>
-        <dt>#Tracks</dt><dd>{{tracks.total}}</dd>
         <dt></dt><dd><iframe src="https://embed.spotify.com/?uri={{uri}}" width="720" height="640" frameborder="0" allowtransparency="true"></iframe></dd>
-        {{/each}}
       </dl>
     </script>
 
     <script id="results-template" type="text/x-handlebars-template">
       <h2>Results</h2>
-      <dl class="dl-horizontal">
-        {{#each tracks.items}}
-          <div style="background-image:url({{images.0.url}})" data-album-id="{{id}}" class="cover"></div>
-          <dt>Name</dt><dd>{{name}}</dd>
-          <dt>Artists</dt><dd>{{#each artists}}{{name}}    {{/each}}</dd>
-        {{/each}}
-      </dl>
+      {{#each tracks.items}}
+        <div class="media">
+          <div class="pull-left">
+            <div style="background-image:url({{album.images.0.url}})" data-track-uri="{{uri}}" class="cover"></div>
+          </div>
+          <div class="media-body">
+            <dl class="dl-horizontal">  
+              <dt>Name</dt><dd>{{name}}</dd>
+              <dt>Album</dt><dd>{{album.name}}</dd>
+              <dt>Artists</dt><dd>{{#each artists}}{{name}}; {{/each}}</dd>
+            </dl>
+          </div>
+        </div>
+      {{/each}}
     </script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
@@ -118,8 +134,8 @@
             error = params.error;
 
         var uid = -1;
-        var playlist_id = -1;
         var create_playlist = true;
+        playlist_id = -1;
 
         if (error) {
           console.log(error);
@@ -147,21 +163,20 @@
 
                       for( var i = 0; i < data.items.length; i += 1) {
                         if(data.items[i].name == "facethemusic") {
-                          playlist_id = data.items[i].id
+                          //playlistsPlaceholder.innerHTML = playlistsTemplate(data.items[i]);
+                          playlist_id = data.items[i].id;
                           create_playlist = false;  
                         }
                       }
-
-                      //playlistsPlaceholder.innerHTML = playlistsTemplate(data);
-
                       $('#login').hide();
                       $('#loggedin').show();
+                      //playlistsPlaceholder.innerHTML = playlistsTemplate(data);
                     }
                   })            
                     .done(function(response){
                       if(create_playlist) {
                         var create_url = 'https://api.spotify.com/v1/users/' + uid + '/playlists';                  
-                        var newplaylist = { name: "facethemusic", public: "true"};
+                        var newplaylist = { name: "facethemusic", public: "false"};
                         $.ajax({
                           url: create_url,
                           data: JSON.stringify(newplaylist),
@@ -171,17 +186,19 @@
                           'Authorization': 'Bearer ' + access_token
                           },
                           success: function(data) {
-                            alert("Playlist Created");
+                            //playlistsPlaceholder.innerHTML = playlistsTemplate(data);
+                            playlist_id = data.id;                            
+                            alert("Playlist Created" + data.id);
                           } 
-                       });
+                        });
                       }
                     });                
               });
-            }          
-            else {
-              // render initial screen
-              $('#login').show();
-              $('#loggedin').hide();
+          }          
+          else {
+            // render initial screen
+            $('#login').show();
+            $('#loggedin').hide();
           }
           document.getElementById('search-form').addEventListener('submit', function (e) {
             e.preventDefault();
@@ -197,6 +214,24 @@
               }
             });
           }, false);
+
+          results.addEventListener('click', function (e) {
+            var target = e.target;
+            if (target !== null && target.classList.contains('cover')) {            
+              var create_url = 'https://api.spotify.com/v1/users/' + uid + '/playlists/' + playlist_id + '/tracks';  
+              var arr = [ target.getAttribute('data-track-uri').toString() ];
+              var newsongs = { uris: arr };     
+              $.ajax({
+                url: create_url,
+                data: JSON.stringify(newsongs),
+                contentType: 'application/json; charset=utf-8',
+                type: 'POST',
+                headers: {
+                'Authorization': 'Bearer ' + access_token
+                }
+              });
+            }
+          });
         }
       })();
     </script>
