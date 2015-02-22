@@ -168,6 +168,7 @@
             error = params.error;
 
         var uid = -1;
+        var market;
         var create_playlist = true;
         playlist_id = -1;
         var fast = true;
@@ -200,9 +201,8 @@
           }
           else {
             console.log("not sent");
-            fast = true;
           }
-        }, ( fast ? 2000 : 60000)); //30000
+        }, ( fast ? 1000 : 60000)); //30000
 
         if (error) {
           console.log(error);
@@ -216,6 +216,8 @@
                 },
                 success: function(response) {
                   uid = response.id;
+                  market = response.country;
+                  console.log(market);
                   userProfilePlaceholder.innerHTML = userProfileTemplate(response);
                 }
             })            
@@ -259,7 +261,6 @@
                           success: function(data) {
                             //playlistsPlaceholder.innerHTML = playlistsTemplate(data);
                             playlist_id = data.id;                            
-                            alert("Playlist Created " + data.name);
                           } 
                         });
                       }
@@ -278,7 +279,8 @@
               url: 'https://api.spotify.com/v1/search',
               data: {
                 q: query,
-                type: 'track'
+                type: 'track',
+                market: market
               },
               success: function (response) {
                 resultsPlaceholder.innerHTML = resultsTemplate(response);
