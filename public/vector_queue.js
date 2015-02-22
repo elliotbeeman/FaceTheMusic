@@ -31,7 +31,7 @@ Queue.prototype.pop = function()
 {
 	var res = this.first.data;
 	this.first = this.first.next;
-	return this.first.data;
+	return res;
 }
 
 var VectorQueue = function()
@@ -57,6 +57,15 @@ VectorQueue.prototype.pop = function(pos)
 	else
 		return this.vector[pos].pop();
 }
+
+
+VectorQueue.prototype.isEmpty = function(key) {
+	if(this.vector[key] === undefined || this.vector[key].first === null)
+		return true;
+	else
+		return false;
+}
+
 
 VectorQueue.prototype.print = function()
 {

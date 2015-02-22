@@ -34,16 +34,6 @@
             return data_uri;
         }
 
-        function takeSnapshot() {
-            Webcam.snap( function(data_uri) {
-                document.getElementById('my_result').innerHTML = '<img src="'+data_uri+'"/>';
-            } );
-        }
-
-        function kairosResponse(res)
-        {
-
-        }
 
         function kairosRecognize()
         {
@@ -86,15 +76,7 @@
             });
         }
 
-        function kairosSnapshot()
-        {
-            // take snapshot
-            Webcam.snap(function(data_uri)
-            {
-                data_uri = scrubSnapshot(data_uri);
-                kairos.enroll(data_uri, "test1", "austin", kairosResponse);
-            });
-        }
+
 
     </script>
 
