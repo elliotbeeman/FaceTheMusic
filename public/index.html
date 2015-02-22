@@ -3,36 +3,16 @@
   <head>
     <title>Example of the Authorization Code flow with Spotify</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <style type="text/css">
-      #login, #loggedin{
-        display: none;
-      }
-      .text-overflow {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        width: 500px;
-      }
-      #search-form, .form-control {
-        margin-bottom: 20px;
-      }
-      .cover {
-        width: 200px;
-        height: 200px;
-        display: inline-block;
-        background-size: cover;
-      }
-      .cover:hover {
-        cursor: pointer;
-        border: 5px solid #e45343;
-      }
-    </style>
+    <link rel="stylesheet" href="./style.css">
   </head>
 
   <body>
     <div class="container">
       <div id="login">
         <h1>It Is Time to Face the Music</h1>
+        <p>Need a party playlist? Why not let everyone make it?</p>
+        <p>Face the Music uses your computer's camera in the background to recognize everyone who adds songs to your party playlist. No need to log in, no need to tell us who you are. Just make sure we can see your face and we'll make sure everyone gets some fair play time rotation.</p>
+        <p>Just log in with Spotify, open up the Spotify app on your computer, add some songs to your newly created facethemusic playlist, hit play, and enjoy.</p>
         <a href="/login" class="btn btn-primary">Log in with Spotify</a>
       </div>
       <div id="cam" style="width:320px; height:240px;"></div>
@@ -44,6 +24,7 @@
         </div>
         <div>
           <h2>Search</h2>
+          <p>Add as many songs as you want - Face the Music will rotate your beats in with different DJs, so you'll hear your contributions along with everyone else's.</p>
           <form id="search-form">
           <input type="text" id="query" value="" class="form-control" placeholder="Type a Song Name"/>
           <input type="submit" id="search" class="btn btn-primary" value="Search" />

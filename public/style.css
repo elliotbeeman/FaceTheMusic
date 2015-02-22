@@ -1,0 +1,45 @@
+div.container
+{
+  max-width: 760px;
+  margin: auto;
+}
+
+h1, h2
+{
+  color: #428bca;
+}
+
+#cam
+{
+  position: absolute;
+  top: -500px;
+  left: -500px;
+}
+
+#login, #loggedin
+{
+  display: none;
+}
+.text-overflow 
+{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 500px;
+}
+#search-form, .form-control 
+{
+  margin-bottom: 20px; 
+}
+.cover 
+{
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  background-size: cover;
+}
+.cover:hover 
+{
+  cursor: pointer;
+  border: 5px solid #e45343;
+}
