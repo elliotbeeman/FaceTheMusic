@@ -1,7 +1,31 @@
+html, body
+{
+  background-color: #428bca;
+  height: 100%;
+}
+
+body
+{
+  background-image: url(blue_music.jpg);
+  background-size: 100% 100%;
+  background-repeat: repeat-y;
+}
+
+p
+{
+  color: #202020;
+  font-size: 110%;
+  line-height: 130%;
+  font-family: "Trebuchet MS", "Verdana", sans-serif;
+}
+
 div.container
 {
   max-width: 760px;
   margin: auto;
+  background-color: white;
+  height: 100%;
+  overflow: scroll;
 }
 
 h1, h2
