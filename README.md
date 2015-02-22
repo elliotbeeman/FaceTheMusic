@@ -1,12 +1,6 @@
-# Spotify Accounts Authentication Examples
+# Face The Music
 
-This project contains basic demos showing the different OAuth 2.0 flows for [authenticating against the Spotify Web API](https://developer.spotify.com/web-api/authorization-guide/).
-
-These examples cover:
-
-* Authorization Code flow
-* Client Credentials flow
-* Implicit Grant flow
+This is a party music playlist application. It uses facial recognition to give every one at the party a chance to hear their own music. As a user enters their choice of song, the application recognizes them, as well as everyone else who has input music choices, and adds music from each user to the playlist.
 
 ## Installation
 
@@ -20,7 +14,7 @@ Once installed, clone the repository and install its dependencies running:
 
     $ node app.js
 
-Then, open `http://localhost:8888` in a browser.
+Then, open `http://localhost:8888` in a browser. Then open Spotify and play the playlist named facethemusic.
 
 ### Using your own credentials
 The examples contains a working client ID and secret key. Note, however, that they might be rate limited if they are used frequently. If you are planning to create an application, we recommend you register your app and get your own credentials instead of using the ones in this project.
