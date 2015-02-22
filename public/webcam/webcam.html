@@ -7,15 +7,32 @@
 <body>
     <script src="./webcam.js"></script>
     <script src="./kairos.js"></script>
+    <script src="./vector_queue.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>    
 
     <div id="my_camera" style="width:320px; height:240px;"></div>
     <div id="my_result"></div>
 
+
+    <div id="result"></div>
+
+    <input type="text" name="songName" id="songName">
+
     <script language="JavaScript">
         Webcam.attach( '#my_camera' );
 
         var kairos = new Kairos("ce3d5ed4", "122f727bf3ffa2940681304eb178a63f");
+        var vqueue = new VectorQueue();
+
+        function scrubSnapshot(data_uri)
+        {
+            data_uri = data_uri.replace("data:image/jpeg;base64,", "");
+            data_uri = data_uri.replace("data:image/jpg;base64,", "");
+            data_uri = data_uri.replace("data:image/png;base64,", "");
+            data_uri = data_uri.replace("data:image/gif;base64,", "");
+            data_uri = data_uri.replace("data:image/bmp;base64,", "");
+            return data_uri;
+        }
 
         function takeSnapshot() {
             Webcam.snap( function(data_uri) {
@@ -25,7 +42,48 @@
 
         function kairosResponse(res)
         {
-            console.log(res.responseText);
+
+        }
+
+        function kairosRecognize()
+        {
+            var song = document.getElementById('songName').value;
+
+            Webcam.snap(function(data_uri)
+            {
+                data_uri = scrubSnapshot(data_uri);
+                kairos.recognize(data_uri, "test2", function(res)
+                {
+                    console.log(res.responseText);
+                    var res_json = JSON.parse(res.responseText);
+                    res_json = res_json.images;
+
+                    if (res_json[0].transaction.status == 'success')
+                    {
+                        console.log("face recognized!!");
+                        console.log(res_json[0].transaction.subject);
+
+                        // may want to look at this in better detail and make the best choice possible
+                        // based on confidence. But for now, fuck it!
+                        vqueue.push(res_json[0].transaction.subject, song);
+                        vqueue.print();
+                    }
+
+                    // face wasn't recognized
+                    else
+                    {
+                        // assign random name for new face
+                        var name_str = Math.random().toString(36).substring(7);
+                        console.log(name_str);
+
+                        kairos.enroll(data_uri, "test2", name_str, function()
+                        {
+                            vqueue.push(name_str, song);
+                            vqueue.print();
+                        });
+                    }
+                });
+            });
         }
 
         function kairosSnapshot()
@@ -33,14 +91,7 @@
             // take snapshot
             Webcam.snap(function(data_uri)
             {
-                // comment
-                // var reader = new FileReader();
-                // var file_input = document.getElementById()
-                data_uri = data_uri.replace("data:image/jpeg;base64,", "");
-                data_uri = data_uri.replace("data:image/jpg;base64,", "");
-                data_uri = data_uri.replace("data:image/png;base64,", "");
-                data_uri = data_uri.replace("data:image/gif;base64,", "");
-                data_uri = data_uri.replace("data:image/bmp;base64,", "");
+                data_uri = scrubSnapshot(data_uri);
                 kairos.enroll(data_uri, "test1", "austin", kairosResponse);
             });
         }
@@ -48,6 +99,6 @@
     </script>
 
     <a href="javascript:void(takeSnapshot())">Take Snapshot</a>
-    <a href="javascript:void(kairosSnapshot())">Kairos Snapshot</a>
+    <a href="javascript:void(kairosRecognize())">Recognize and Submit</a>
 </body>
 </html>

@@ -192,7 +192,8 @@ Kairos.prototype.recognize = function(image_data, gallery_id, callback, options)
   
   var url = this.api_host + 'recognize';
 
-  var data = { 'image' : image_data , 'gallery_name' : gallery_id, 'subject_id' : subject_id};
+  // var data = { 'image' : image_data , 'gallery_name' : gallery_id, 'subject_id' : subject_id};
+  var data = { 'image' : image_data , 'gallery_name' : gallery_id };    // CHANGE: subject_id in original line above is undefined
 
   if(!jQuery.isEmptyObject(options)) {
       data = jQuery.extend(data, options);
