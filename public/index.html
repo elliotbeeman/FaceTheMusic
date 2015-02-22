@@ -96,18 +96,18 @@
                 var options = { "threshold" : 0.25 };
                 kairos.recognize(data_uri, gallery, function(res)
                 {
-                    console.log(res.responseText);
+                    //console.log(res.responseText);
                     var res_json = JSON.parse(res.responseText);
                     if(res_json === undefined || res_json.images === undefined) {
                       vqueue.push("sad", song);
-                      console.log("everything is sad")
+                      //console.log("everything is sad")
                     }
                     else {
                       res_json = res_json.images;
 
                       if (res_json[0].transaction.status == 'success')
                       {
-                          console.log("face recognized!!");
+                          //console.log("face recognized!!");
                           //console.log(res_json[0].transaction.subject);
   
                           // may want to look at this in better detail and make the best choice possible
@@ -119,7 +119,7 @@
                       // face wasn't recognized
                       else
                       {
-                          console.log("face not recognized!!");
+                          //console.log("face not recognized!!");
                           // assign random name for new face
                           var name_str = Math.random().toString(36).substring(7);
                           //console.log(name_str);
@@ -174,7 +174,11 @@
         playlist_id = -1;
         var fast = true;
 
-        setInterval(function(){
+        var interval_handler;
+
+        var interval_callback = function(){
+
+
           var url;
           var str_arr = [];
           var send = false;
@@ -197,13 +201,21 @@
               'Authorization': 'Bearer ' + access_token
               }
             });
-            console.log("sent " + str_arr.length);
-            fast = false;
+
+            if(fast) {
+              fast = false;
+              clearInterval(interval_handler);
+              setInterval(interval_callback, 15000);
+            }            
           }
-          else {
-            console.log("not sent");
-          }
-        }, ( fast ? 1000 : 60000)); //30000
+
+          if(fast)
+            console.log("fast");
+          else
+            console.log("slow");
+        }
+
+        interval_handler = setInterval(interval_callback, 1000 ); //30000
 
         if (error) {
           console.log(error);
@@ -218,7 +230,7 @@
                 success: function(response) {
                   uid = response.id;
                   market = response.country;
-                  console.log(market);
+                  //console.log(market);
                   userProfilePlaceholder.innerHTML = userProfileTemplate(response);
                 }
             })            
