@@ -19,7 +19,7 @@
   <body>
     <div class="container">
       <div id="login">
-        <h1>This is an example of the Authorization Code flow</h1>
+        <h1>It Is Time to Face the Music</h1>
         <a href="/login" class="btn btn-primary">Log in with Spotify</a>
       </div>
       <div id="loggedin">
@@ -27,9 +27,10 @@
         </div>
         <div id="playlists">
         </div>
-        <div id="oauth">
-        </div>
-        <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
+        <form id="search-form">
+        <input type="text" id="query" value="" class="form-control" placeholder="Type a Song Name"/>
+        <input type="submit" id="search" class="btn btn-primary" value="Search" />
+        </form>
       </div>
     </div>
 
@@ -59,16 +60,8 @@
         {{#each items}}
         <dt>Name</dt><dd>{{name}}</dd>
         <dt>#Tracks</dt><dd>{{tracks.total}}</dd>
-        <dt></dt><dd><iframe src="https://embed.spotify.com/?uri={{uri}}&view=coverart" frameborder="0" allowtransparency="true"></iframe></dd>
+        <dt></dt><dd><iframe src="https://embed.spotify.com/?uri={{uri}}" width="720" height="640" frameborder="0" allowtransparency="true"></iframe></dd>
         {{/each}}
-      </dl>
-    </script>
-
-    <script id="oauth-template" type="text/x-handlebars-template">
-      <h2>oAuth info</h2>
-      <dl class="dl-horizontal">
-        <dt>Access token</dt><dd class="text-overflow">{{access_token}}</dd>
-        <dt>Refresh token</dt><dd class="text-overflow">{{refresh_token}}></dd>
       </dl>
     </script>
 
@@ -99,75 +92,86 @@
             playlistsTemplate = Handlebars.compile(playlistsSource),
             playlistsPlaceholder = document.getElementById('playlists')
 
-        var oauthSource = document.getElementById('oauth-template').innerHTML,
-            oauthTemplate = Handlebars.compile(oauthSource),
-            oauthPlaceholder = document.getElementById('oauth');
-
         var params = getHashParams();
 
         var access_token = params.access_token,
             refresh_token = params.refresh_token,
             error = params.error;
 
-        var uid;
+        var uid = -1;
+        var playlist_id = -1;
+        var create_playlist = true;
 
         if (error) {
+          console.log(error);
           alert('There was an error during the authentication');
         } else {
           if (access_token) {
-            // render oauth info
-            oauthPlaceholder.innerHTML = oauthTemplate({
-              access_token: access_token,
-              refresh_token: refresh_token
-            });
-
             $.ajax({
                 url: 'https://api.spotify.com/v1/me',
                 headers: {
                   'Authorization': 'Bearer ' + access_token
                 },
                 success: function(response) {
+                  uid = response.id;
                   userProfilePlaceholder.innerHTML = userProfileTemplate(response);
                 }
             })            
-            .done(function(response){
-                  playlist_url = 'https://api.spotify.com/v1/users/' + response.id + '/playlists';
-                  console.log('ID: ' + response.id + ' ' + playlist_url);
+              .done(function(response){
+                  var playlist_url = 'https://api.spotify.com/v1/users/' + response.id + '/playlists';                  
                   $.ajax({
                     url: playlist_url,
                     headers: {
                     'Authorization': 'Bearer ' + access_token
                     },
                     success: function(data) {
-                      console.log(data);
-                      playlistsPlaceholder.innerHTML = playlistsTemplate(data);
+
+                      for( var i = 0; i < data.items.length; i += 1) {
+                        if(data.items[i].name == "facethemusic") {
+                          playlist_id = data.items[i].id
+                          create_playlist = false;  
+                        }
+                      }
+
+                      //playlistsPlaceholder.innerHTML = playlistsTemplate(data);
 
                       $('#login').hide();
                       $('#loggedin').show();
                     }
-                  })
-                }
-              );
-            
-          } else {
+                  })            
+                    .done(function(response){
+                      if(create_playlist) {
+                        var create_url = 'https://api.spotify.com/v1/users/' + uid + '/playlists';                  
+                        var newplaylist = { name: "facethemusic", public: "true"};
+                        $.ajax({
+                          url: create_url,
+                          data: JSON.stringify(newplaylist),
+                          contentType: 'application/json; charset=utf-8',
+                          type: 'POST',
+                          headers: {
+                          'Authorization': 'Bearer ' + access_token
+                          },
+                          success: function(data) {
+                            alert("Playlist Created");
+                          } 
+                       });
+                      }
+                    });                
+              });
+            }          
+            else {
               // render initial screen
               $('#login').show();
               $('#loggedin').hide();
           }
-
-          document.getElementById('obtain-new-token').addEventListener('click', function() {
+          document.getElementById('search-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var query = document.getElementById('query').value;
+/*           
             $.ajax({
-              url: '/refresh_token',
-              data: {
-                'refresh_token': refresh_token
-              }
-            }).done(function(data) {
-              access_token = data.access_token;
-              oauthPlaceholder.innerHTML = oauthTemplate({
-                access_token: access_token,
-                refresh_token: refresh_token
-              });
+
             });
+*/
           }, false);
         }
       })();

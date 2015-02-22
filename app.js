@@ -12,8 +12,8 @@ var request = require('request'); // "Request" library
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-var client_id = '03ffe0cac0a0401aa6673c3cf6d02ced'; // Your client id
-var client_secret = 'a57c43efb9644574a96d6623fb8bfbc2'; // Your client secret
+var client_id = '759471e0b92c42c3b3fccd9163f45852'; // Your client id
+var client_secret = '59e8af912c794cfab419a0bec4d5dc7a'; // Your client secret
 var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
 /**
@@ -44,7 +44,7 @@ app.get('/login', function(req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email playlist-modify-public playlist-read-private'; // playlist-modify-public
+  var scope = 'user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private'; //  playlist-read-private playlist-modify-public playlist-modify-private
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -108,6 +108,7 @@ app.get('/callback', function(req, res) {
             refresh_token: refresh_token
           }));
       } else {
+
         res.redirect('/#' +
           querystring.stringify({
             error: 'invalid_token'
